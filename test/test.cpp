@@ -10,10 +10,10 @@ int main(int argc, const char** argv) {
 
 	vs.start();
 
-	while (vs.isOpened) {
+	while (vs.isOpened()) {
 		frame = vs.read();
 
-		if (!vs.grab)
+		if (frame.empty())
 			continue;
 
 		cv::imshow("frame", frame);
