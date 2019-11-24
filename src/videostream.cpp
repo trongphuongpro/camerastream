@@ -6,33 +6,33 @@
 using namespace std;
 using namespace cv;
 
+
 VideoStream::VideoStream(int camera) {
 	this->video = cv::VideoCapture(camera);
-	this->isRunning = false;
-	this->isGrabbed = false;
-	this->_isOpened = this->video.isOpened();
-
-	if (!this->_isOpened)
-		cout << "Cannot open video stream" << endl;
-	else {
-		cout << "Video stream opened" << endl;
-		start();
-		sleep(2);
-	}
+	setup();
 }
 
 
 VideoStream::VideoStream(string filename) {
 	this->video = cv::VideoCapture(filename);
+	setup();
+}
+
+
+void VideoStream::setup() {
 	this->isRunning = false;
+	this->isGrabbed = false;
 	this->_isOpened = this->video.isOpened();
 
 	if (!this->_isOpened)
-		cout << "Cannot open video stream" << endl;
+		cout << "[VideoStream] Cannot open video stream" << endl;
 	else {
-		cout << "Video stream opened" << endl;
-		start();
-		sleep(2);
+		cout << "[VideoStream] Opened" << endl;
+
+		if (start())
+			cout << "[VideoStream] Streaming thread created" << endl;
+		else
+			cout << "[VideoStream] Cannot create streaming thread" << endl;
 	}
 }
 
@@ -48,18 +48,19 @@ bool VideoStream::isOpened() {
 }
 
 
-void VideoStream::start() {
-	if (this->_isOpened) {
-		this->isRunning = true;
-		pthread_create(&this->thread, NULL, stream, this);
-		cout << "New thread created" << endl;
+int VideoStream::start() {
+	this->isRunning = true;
+	if (pthread_create(&this->thread, NULL, stream, this) == 0) {
+		sleep(2);
+		return 1;
 	}
+	
+	return 0;
 }
 
 
 void VideoStream::release() {
 	this->isRunning = false;
-	cout << "Video stream stopped" << endl;
 }
 
 
@@ -82,6 +83,7 @@ void* stream(void *video) {
 	}
 
 	vs->video.release();
+	cout << "[VideoStream] Stopped" << endl;
 
 	return 0;
 }

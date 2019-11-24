@@ -11,7 +11,7 @@ public:
 	VideoStream(std::string);
 	~VideoStream();
 
-	void start();
+	int start();
 	void release();
 	void operator>>(cv::Mat&);
 	bool read(cv::Mat&);
@@ -26,6 +26,7 @@ private:
 	bool isRunning;
 	pthread_t thread;
 
+	void setup();
 	friend void* stream(void*);
 };
 
