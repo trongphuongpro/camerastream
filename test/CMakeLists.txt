@@ -7,7 +7,7 @@ find_package(Threads REQUIRED)
 
 set(TARGET testbench)
 
-add_executable(${TARGET} test.cpp ../src/videostream.cpp)
+add_executable(${TARGET} test.cpp ../src/camerastream.cpp)
 target_link_libraries(${TARGET} ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(${TARGET} PUBLIC ../include ${OpenCV_INCLUDE_DIRS})
 

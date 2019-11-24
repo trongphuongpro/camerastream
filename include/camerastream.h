@@ -1,17 +1,16 @@
-#ifndef __VIDEOSTREAM__
-#define __VIDEOSTREAM__
+#ifndef __CAMERASTREAM__
+#define __CAMERASTREAM__
 
 #include <pthread.h>
 #include <string>
 
 
-class VideoStream {
+class CameraStream {
 public:
-	VideoStream(int);
-	VideoStream(std::string);
-	~VideoStream();
+	CameraStream(int);
+	CameraStream(std::string);
+	~CameraStream();
 
-	int start();
 	void release();
 	void operator>>(cv::Mat&);
 	bool read(cv::Mat&);
@@ -26,6 +25,7 @@ private:
 	bool isRunning;
 	pthread_t thread;
 
+	int start();
 	void setup();
 	friend void* stream(void*);
 };
