@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "opencv2/videoio.hpp"
 #include "videostream.h"
 
@@ -13,8 +14,11 @@ VideoStream::VideoStream(int camera) {
 
 	if (!this->_isOpened)
 		cout << "Cannot open video stream" << endl;
-	else
+	else {
 		cout << "Video stream opened" << endl;
+		start();
+		sleep(2);
+	}
 }
 
 
@@ -25,13 +29,17 @@ VideoStream::VideoStream(string filename) {
 
 	if (!this->_isOpened)
 		cout << "Cannot open video stream" << endl;
-	else
+	else {
 		cout << "Video stream opened" << endl;
+		start();
+		sleep(2);
+	}
 }
 
 
 VideoStream::~VideoStream() {
-
+	if (this->isRunning)
+		this->release();
 }
 
 
@@ -49,24 +57,20 @@ void VideoStream::start() {
 }
 
 
-void VideoStream::stop() {
+void VideoStream::release() {
 	this->isRunning = false;
+	cout << "Video stream stopped" << endl;
 }
 
 
-Mat& VideoStream::read() {
-	if (this->isGrabbed)
-		return this->frame;
-	
-	return ???
+bool VideoStream::read(Mat& frame) {
+	frame = this->frame;
+	return this->isGrabbed;
 }
 
 
 void VideoStream::operator>>(Mat& frame) {
-	if (this->isGrabbed)
-		frame = this->frame;
-	else
-		frame = ???
+	frame = this->frame;
 }
 
 

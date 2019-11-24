@@ -12,9 +12,9 @@ public:
 	~VideoStream();
 
 	void start();
-	void stop();
+	void release();
 	void operator>>(cv::Mat&);
-	cv::Mat& read();
+	bool read(cv::Mat&);
 	bool isOpened();
 
 private:
