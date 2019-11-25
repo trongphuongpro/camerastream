@@ -1,26 +1,46 @@
 #include <iostream>
+#include <stdio.h>
 #include "opencv2/highgui.hpp"
-#include "videostream.h"
+#include "opencv2/videoio.hpp"
+#include "camerastream.h"
+#include <time.h>
+
 
 using namespace std;
 
 int main(int argc, const char** argv) {
-	VideoStream vs(2);
+	CameraStream vs(0);
+	
 	cv::Mat frame;
-
-	vs.start();
-
+	unsigned int count = 0;
+	unsigned int frameNum = 500;
+	time_t begin = time(NULL);
+	int delay = 30;
+	
 	while (vs.isOpened()) {
-		frame = vs.read();
+		vs.read(frame);
 
-		if (frame.empty())
-			continue;
-
-		cv::imshow("frame", frame);
-		int key = cv::waitKey(30) & 0xFF;
-		if (key == 27)
+		if (frame.empty()) {
+			cout << "no frame" << endl;
 			break;
+		}
+		
+		if (delay != 0) {
+			cv::imshow("frame", frame);
+			int key = cv::waitKey(delay) & 0xFF;
+			if (key == 27)
+				break;
+		}
+
+		count++;
+		if (count == frameNum) {
+			break;
+		}
 	}
 
-	vs.stop();
+	time_t end = time(NULL);
+	printf("FPS: %.2f\n", (float)frameNum/(end-begin));
+
+	vs.release();
+	cv::destroyAllWindows();
 }
