@@ -9,6 +9,7 @@ using namespace cv;
 CameraStream::CameraStream(int camera) {
 	this->video = cv::VideoCapture(camera);
 	this->isRunning = false;
+	this->isNewFrame = false;
 	this->_isOpened = this->video.isOpened();
 
 	if (!this->_isOpened) {
@@ -17,8 +18,11 @@ CameraStream::CameraStream(int camera) {
 	else {
 		cout << "[CameraStream] Opened" << endl;
 
-		// IMPORTANT: read the first frame from camera
-		this->isGrabbed = this->video.read(this->frame);
+		// IMPORTANT: warm up the camera by reading the first frame
+		bool isGrabbed = this->video.read(this->frame);
+
+		if (isGrabbed)
+			this->isNewFrame = true;
 
 		if (start())
 			cout << "[CameraStream] Streaming thread created" << endl;
@@ -56,21 +60,39 @@ void CameraStream::release() {
 
 
 bool CameraStream::read(Mat& frame) {
-	frame = this->frame;
-	return this->isGrabbed;
+	if (this->isNewFrame) {
+		frame = this->frame;
+		this->isNewFrame = false;
+
+		return true;
+	}
+	else {
+		frame = Mat();
+
+		return false;
+	}
 }
 
 
 void CameraStream::operator>>(Mat& frame) {
-	frame = this->frame;
+	if (this->isNewFrame) {
+		frame = this->frame;
+		this->isNewFrame = false;
+	}
+	else {
+		frame = Mat();
+	}
 }
 
 
 void* stream(void *video) {
 	CameraStream* vs = static_cast<CameraStream*>(video);
+	bool isGrabbed = false;
 
 	while (vs->isRunning) {
-		vs->isGrabbed = vs->video.read(vs->frame);
+		isGrabbed = vs->video.read(vs->frame);
+		if (isGrabbed)
+			vs->isNewFrame = true;
 	}
 
 	vs->video.release();

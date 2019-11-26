@@ -15,14 +15,14 @@ int main(int argc, const char** argv) {
 	unsigned int count = 0;
 	unsigned int frameNum = 500;
 	time_t begin = time(NULL);
-	int delay = 30;
+	int delay = 15;
 	
 	while (vs.isOpened()) {
 		vs.read(frame);
 
 		if (frame.empty()) {
-			cout << "no frame" << endl;
-			break;
+			//cout << "no frame" << endl;
+			continue;
 		}
 		
 		if (delay != 0) {

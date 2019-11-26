@@ -20,9 +20,9 @@ private:
 	cv::VideoCapture video;
 	cv::Mat frame;
 	
-	bool isGrabbed;
 	bool _isOpened;
 	bool isRunning;
+	bool isNewFrame;
 	pthread_t thread;
 
 	int start();
